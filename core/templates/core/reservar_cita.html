@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4>Confirmar Reserva</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-light border text-center">
+                    <h5>Reserva con: Dr/a. {{ cita.veterinario.first_name }} {{ cita.veterinario.last_name }}</h5>
+                    <p class="mb-0">📅 {{ cita.fecha }} | 🕒 {{ cita.hora }}</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h5 class="mt-4 mb-3 text-primary">Datos del Paciente</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Nombre de la Mascota</label>
+                            <input type="text" name="nombre_mascota" class="form-control" placeholder="Ej: Firulais" required>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Tipo de Animal</label>
+                            {{ form.especie }}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Raza</label>
+                            <input type="text" name="raza" class="form-control" placeholder="Ej: Pastor Alemán" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de Nacimiento de la Mascota</label>
+                        {{ form.fecha_nacimiento }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Motivo de la Consulta</label>
+                        {{ form.motivo }}
+                        <div class="form-text">Describe brevemente los síntomas o razón de la visita.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">¡Confirmar Cita!</button>
+                        <a href="{% url 'lista_citas' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

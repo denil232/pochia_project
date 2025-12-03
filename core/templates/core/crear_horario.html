@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4>Abrir Nuevo Horario de Atención</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Veterinario</label>
+                        {{ form.veterinario }}
+                        <small class="text-muted">Selecciona el médico de turno</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha</label>
+                            {{ form.fecha }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hora</label>
+                            {{ form.hora }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Guardar Horario</button>
+                        <a href="{% url 'lista_citas' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
