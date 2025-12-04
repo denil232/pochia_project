@@ -78,6 +78,7 @@
                             {% if user.is_staff and cita.estado == 'CANCELADA' and cita.cliente %}
                                 <a href="{% url 'reagendar_cita' cita.id %}" class="btn btn-sm btn-primary ms-1">
                                     🔄 Reagendar
+                            
                                 </a>
                             {% endif %}
                         </td>

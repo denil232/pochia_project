@@ -22,4 +22,5 @@ urlpatterns = [
     path('notificaciones/borrar/<int:notificacion_id>/', views.eliminar_notificacion, name='eliminar_notificacion'),
     path('reagendar/<int:cita_id>/', views.reagendar_cita, name='reagendar_cita'),
     path('reagendar-confirmar/<int:nueva_cita_id>/<int:antigua_cita_id>/', views.confirmar_reagendamiento, name='confirmar_reagendamiento'),
+    path('eliminar-definitivo/<int:cita_id>/', views.eliminar_cita_permanente, name='eliminar_cita_permanente'),
 ]

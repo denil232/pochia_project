@@ -199,3 +199,14 @@ def confirmar_reagendamiento(request, nueva_cita_id, antigua_cita_id):
         )
 
     return redirect('lista_citas')
+
+# --- NUEVA FUNCIÓN: ELIMINAR CITA DEFINITIVAMENTE ---
+@staff_member_required
+def eliminar_cita_permanente(request, cita_id):
+    cita = get_object_or_404(Cita, id=cita_id)
+    
+    # Solo permitimos eliminar si ya está cancelada (seguridad)
+    if cita.estado == 'CANCELADA':
+        cita.delete()
+        
+    return redirect('lista_citas')

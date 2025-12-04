@@ -43,8 +43,27 @@ class CitaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['veterinario'].queryset = User.objects.filter(groups__name='Veterinario')
         self.fields['veterinario'].label = "Médico Veterinario"
-        # Opcional: Bloquear fechas pasadas visualmente
-        self.fields['fecha'].widget.attrs['min'] = timezone.now().date()
+        
+        # --- NUEVA REGLA: MÁXIMO 6 MESES A FUTURO ---
+        hoy = timezone.now().date()
+        fecha_limite = hoy + datetime.timedelta(days=180) # 6 meses aprox
+        
+        # Esto bloquea el calendario visualmente
+        self.fields['fecha'].widget.attrs['min'] = hoy
+        self.fields['fecha'].widget.attrs['max'] = fecha_limite
+
+    # --- VALIDACIÓN DE SEGURIDAD (Backend) ---
+    def clean_fecha(self):
+        fecha = self.cleaned_data.get('fecha')
+        hoy = timezone.now().date()
+        fecha_limite = hoy + datetime.timedelta(days=180)
+
+        if fecha:
+            if fecha < hoy:
+                raise forms.ValidationError("No puedes crear horarios en el pasado.")
+            if fecha > fecha_limite:
+                raise forms.ValidationError(f"Solo puedes agendar hasta 6 meses en el futuro (Hasta: {fecha_limite}).")
+        return fecha
 
     def clean(self):
         cleaned_data = super().clean()
@@ -109,8 +128,7 @@ class ReservaForm(forms.Form):
             
         return fecha
     
-# --- AGREGAR AL FINAL DE core/forms.py ---
-
+# --- FORMULARIO 4: CANCELACIÓN MASIVA ---
 class CancelarMasivoForm(forms.Form):
     veterinario = forms.ModelChoiceField(
         queryset=User.objects.filter(groups__name='Veterinario'),
@@ -121,6 +139,7 @@ class CancelarMasivoForm(forms.Form):
         label="Desde",
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
+    # CORREGIDO: Aquí estaba el error, ahora dice DateField correctamente
     fecha_fin = forms.DateField(
         label="Hasta",
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
