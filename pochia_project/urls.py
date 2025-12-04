@@ -18,4 +18,5 @@ urlpatterns = [
     path('reservar/<int:cita_id>/', views.reservar_cita, name='reservar_cita'),
     path('cancelar/<int:cita_id>/', views.cancelar_cita, name='cancelar_cita'),
     path('notificaciones/', views.mis_notificaciones, name='mis_notificaciones'),
+    path('cancelacion-masiva/', views.cancelar_masivo, name='cancelar_masivo'),
 ]

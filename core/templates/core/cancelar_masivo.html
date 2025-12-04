@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white">
+                <h4>🚨 Gestión de Ausencias / Cancelación Masiva</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>¡Cuidado!</strong> Esta acción cancelará <b>TODAS</b> las citas (Disponibles y Reservadas) del veterinario seleccionado en el rango de fechas.
+                    <br><br>
+                    Se enviarán notificaciones automáticas a los clientes afectados.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Seleccionar Veterinario</label>
+                        {{ form.veterinario }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha Inicio (Ausencia)</label>
+                            {{ form.fecha_inicio }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha Fin (Regreso)</label>
+                            {{ form.fecha_fin }}
+                        </div>
+                    </div>
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg">Ejecutar Cancelación Masiva</button>
+                        <a href="{% url 'lista_citas' %}" class="btn btn-secondary">Volver</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2,14 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils import timezone
-import datetime
+import datetime # <--- Necesario para definir el año 2005
 from .models import Cita
 
 # --- GENERADOR DE HORARIOS (De 08:00 a 20:00 cada 30 min) ---
 HORARIOS_CHOICES = []
-for h in range(8, 21): # Desde las 8 hasta las 20 horas
+for h in range(8, 21):
     for m in (0, 30):
-        # Formato visual: "08:00", "08:30", etc.
         hora_str = f"{h:02d}:{m:02d}"
         HORARIOS_CHOICES.append((hora_str, hora_str))
 
@@ -26,7 +25,6 @@ class RegistroClienteForm(UserCreationForm):
 
 # --- FORMULARIO 2: CREAR HORARIOS (RECEPCIONISTA) ---
 class CitaForm(forms.ModelForm):
-    # CAMBIO IMPORTANTE: Usamos ChoiceField (Lista) en vez de TimeInput (Reloj)
     hora = forms.ChoiceField(
         choices=HORARIOS_CHOICES,
         label="Hora de Atención",
@@ -45,9 +43,9 @@ class CitaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['veterinario'].queryset = User.objects.filter(groups__name='Veterinario')
         self.fields['veterinario'].label = "Médico Veterinario"
+        # Opcional: Bloquear fechas pasadas visualmente
         self.fields['fecha'].widget.attrs['min'] = timezone.now().date()
 
-    # --- VALIDACIÓN: EVITAR DUPLICADOS ---
     def clean(self):
         cleaned_data = super().clean()
         veterinario = cleaned_data.get('veterinario')
@@ -55,17 +53,13 @@ class CitaForm(forms.ModelForm):
         hora = cleaned_data.get('hora')
 
         if veterinario and fecha and hora:
-            # Buscamos si existe choque de horario
             existe = Cita.objects.filter(
                 veterinario=veterinario,
                 fecha=fecha,
                 hora=hora
             ).exists()
-
             if existe:
-                # Marcamos el error en el campo 'hora' para que salga rojo
                 self.add_error('hora', f"El Dr/a. {veterinario.last_name} ya tiene agenda a las {hora}.")
-        
         return cleaned_data
 
 
@@ -82,7 +76,7 @@ class ReservaForm(forms.Form):
     raza = forms.CharField(max_length=100, label="Raza")
     
     fecha_nacimiento = forms.DateField(
-        label="Fecha de Nacimiento de la Mascota",
+        label="Fecha de Nacimiento",
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
     
@@ -93,10 +87,50 @@ class ReservaForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Bloqueo VISUAL en el calendario (HTML)
+        # 1. Máximo hoy
         self.fields['fecha_nacimiento'].widget.attrs['max'] = timezone.now().date()
+        # 2. Mínimo 1 de Enero de 2005
+        self.fields['fecha_nacimiento'].widget.attrs['min'] = '2005-01-01'
 
     def clean_fecha_nacimiento(self):
         fecha = self.cleaned_data.get('fecha_nacimiento')
-        if fecha and fecha > timezone.now().date():
-            raise forms.ValidationError("La mascota no puede haber nacido en el futuro.")
+        
+        # Validación DE SEGURIDAD (Backend)
+        if fecha:
+            # Regla 1: No futuro
+            if fecha > timezone.now().date():
+                raise forms.ValidationError("La mascota no puede haber nacido en el futuro.")
+            
+            # Regla 2: Año mínimo 2005
+            fecha_minima = datetime.date(2005, 1, 1)
+            if fecha < fecha_minima:
+                raise forms.ValidationError("La fecha de nacimiento no puede ser anterior al año 2005.")
+            
         return fecha
+    
+# --- AGREGAR AL FINAL DE core/forms.py ---
+
+class CancelarMasivoForm(forms.Form):
+    veterinario = forms.ModelChoiceField(
+        queryset=User.objects.filter(groups__name='Veterinario'),
+        label="Veterinario a Cancelar",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    fecha_inicio = forms.DateField(
+        label="Desde",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    fecha_fin = forms.DateField(
+        label="Hasta",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        inicio = cleaned_data.get('fecha_inicio')
+        fin = cleaned_data.get('fecha_fin')
+        
+        if inicio and fin and inicio > fin:
+            raise forms.ValidationError("La fecha de inicio no puede ser mayor a la fecha de fin.")
+        return cleaned_data

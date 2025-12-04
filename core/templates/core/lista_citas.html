@@ -3,9 +3,17 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Agenda Veterinaria 📅</h2>
-    <!-- Solo mostramos el botón de crear si es staff (Recepcionista/Admin) -->
+    
     {% if user.is_staff %}
-        <a href="{% url 'crear_horario' %}" class="btn btn-primary">+ Nuevo Bloque</a>
+        <div>
+            <a href="{% url 'cancelar_masivo' %}" class="btn btn-danger me-2">
+                🚨 Reportar Ausencia/Vacaciones
+            </a>
+            
+            <a href="{% url 'crear_horario' %}" class="btn btn-primary">
+                + Nuevo Bloque
+            </a>
+        </div>
     {% endif %}
 </div>
 
@@ -19,7 +27,7 @@
                         <th>Hora</th>
                         <th>Veterinario</th>
                         <th>Estado</th>
-                        <th>Paciente (Mascota)</th>
+                        <th>Paciente</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -30,18 +38,18 @@
                         <td>{{ cita.hora }}</td>
                         <td>Dr/a. {{ cita.veterinario.first_name }} {{ cita.veterinario.last_name }}</td>
                         
-                        <!-- Columna de Estado con colores -->
                         <td>
                             {% if cita.estado == 'DISPONIBLE' %}
                                 <span class="badge bg-success">Disponible</span>
                             {% elif cita.estado == 'RESERVADA' %}
                                 <span class="badge bg-warning text-dark">Reservada</span>
+                            {% elif cita.estado == 'CANCELADA' %}
+                                <span class="badge bg-danger">Cancelada</span>
                             {% else %}
                                 <span class="badge bg-secondary">{{ cita.estado }}</span>
                             {% endif %}
                         </td>
 
-                        <!-- Columna de Paciente -->
                         <td>
                             {% if cita.mascota %}
                                 {{ cita.mascota.nombre }} ({{ cita.mascota.dueno.first_name }})
@@ -50,21 +58,19 @@
                             {% endif %}
                         </td>
 
-                        <!-- Columna de Botones de Acción -->
                         <td>
                             {% if cita.estado == 'DISPONIBLE' %}
-                                <!-- AQUÍ ESTÁ EL CAMBIO IMPORTANTE: Enlace a reservar_cita con el ID -->
                                 <a href="{% url 'reservar_cita' cita.id %}" class="btn btn-sm btn-outline-success">Reservar</a>
+                            {% endif %}
                             
-                            {% elif cita.estado == 'RESERVADA' and user.is_staff %}
-                                <!-- Botón para cancelar (solo visible para staff) -->
-                                <a href="#" class="btn btn-sm btn-outline-danger">Cancelar</a>
+                            {% if user.is_staff and cita.estado != 'CANCELADA' and cita.estado != 'REALIZADA' %}
+                                <a href="{% url 'cancelar_cita' cita.id %}" class="btn btn-sm btn-outline-danger ms-1">Cancelar</a>
                             {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">No hay horarios creados aún.</td>
+                        <td colspan="6" class="text-center">No hay horarios futuros disponibles.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
