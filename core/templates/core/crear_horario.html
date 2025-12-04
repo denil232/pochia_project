@@ -8,27 +8,48 @@
                 <h4>Abrir Nuevo Horario de Atención</h4>
             </div>
             <div class="card-body">
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
                 <form method="post">
                     {% csrf_token %}
                     
                     <div class="mb-3">
                         <label class="form-label">Veterinario</label>
                         {{ form.veterinario }}
-                        <small class="text-muted">Selecciona el médico de turno</small>
+                        {% if form.veterinario.errors %}
+                            <div class="text-danger small">{{ form.veterinario.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Fecha</label>
                             {{ form.fecha }}
+                            {% if form.fecha.errors %}
+                                <div class="text-danger small">{{ form.fecha.errors.0 }}</div>
+                            {% endif %}
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Hora</label>
-                            {{ form.hora }}
+                            {% if form.hora.errors %}
+                                <input type="time" name="hora" class="form-control is-invalid" step="1800" required id="id_hora">
+                                <div class="invalid-feedback d-block">
+                                    {{ form.hora.errors.0 }}
+                                </div>
+                            {% else %}
+                                {{ form.hora }}
+                            {% endif %}
+                            <small class="text-muted">Intervalos de 30 min</small>
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2">
+                    <div class="d-grid gap-2 mt-3">
                         <button type="submit" class="btn btn-success">Guardar Horario</button>
                         <a href="{% url 'lista_citas' %}" class="btn btn-secondary">Cancelar</a>
                     </div>

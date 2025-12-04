@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">🔔 Mis Notificaciones</h2>
+
+        <div class="list-group shadow">
+            {% for noti in notificaciones %}
+                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1 text-danger">Aviso Importante</h5>
+                        <small class="text-muted">{{ noti.fecha|date:"d M Y H:i" }}</small>
+                    </div>
+                    <p class="mb-1">{{ noti.mensaje }}</p>
+                    
+                    <small>
+                        <a href="{% url 'lista_citas' %}" class="text-primary fw-bold">Ir a la Agenda para reagendar &rarr;</a>
+                    </small>
+                </div>
+            {% empty %}
+                <div class="list-group-item text-center py-5">
+                    <p class="mb-0 text-muted">No tienes notificaciones nuevas.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

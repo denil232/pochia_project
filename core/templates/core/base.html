@@ -11,21 +11,36 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">🐶 Pochota S.A.</a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <span class="nav-link text-white">Hola, {{ user.first_name }}</span>
+                            <a class="nav-link active" href="{% url 'lista_citas' %}">📅 Agenda Médica</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold" href="{% url 'mis_notificaciones' %}">
+                                🔔 Avisos
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <span class="nav-link text-white ms-2 border-start ps-3">Hola, {{ user.first_name }}</span>
+                        </li>
+                        
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm mt-1">Salir</button>
+                                <button type="submit" class="btn btn-danger btn-sm mt-1 ms-2">Salir</button>
                             </form>
                         </li>
+
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link text-white" href="{% url 'login' %}">Ingresar</a>

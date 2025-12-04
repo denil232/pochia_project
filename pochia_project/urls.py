@@ -16,4 +16,6 @@ urlpatterns = [
     path('crear-horario/', views.crear_horario, name='crear_horario'),
     # NUEVA RUTA: Recibe el ID de la cita (ej: /reservar/1/)
     path('reservar/<int:cita_id>/', views.reservar_cita, name='reservar_cita'),
+    path('cancelar/<int:cita_id>/', views.cancelar_cita, name='cancelar_cita'),
+    path('notificaciones/', views.mis_notificaciones, name='mis_notificaciones'),
 ]

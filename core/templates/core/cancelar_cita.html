@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white">
+                <h4>⚠️ Confirmar Cancelación</h4>
+            </div>
+            <div class="card-body text-center">
+                <h5 class="card-title">¿Estás seguro que deseas cancelar esta cita?</h5>
+                
+                <p class="mt-3">
+                    <strong>Veterinario:</strong> {{ cita.veterinario.first_name }} {{ cita.veterinario.last_name }}<br>
+                    <strong>Fecha:</strong> {{ cita.fecha }} - {{ cita.hora }}<br>
+                    {% if cita.cliente %}
+                        <strong>Cliente Afectado:</strong> {{ cita.cliente.first_name }} {{ cita.cliente.last_name }} ({{ cita.mascota.nombre }})
+                    {% else %}
+                        <span class="text-muted">(Esta cita no tiene cliente reservado aún)</span>
+                    {% endif %}
+                </p>
+
+                {% if cita.cliente %}
+                    <div class="alert alert-warning">
+                        <small>ℹ️ Al cancelar, se enviará una notificación automática al cliente.</small>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-block mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg">Sí, Cancelar Cita</button>
+                        <a href="{% url 'lista_citas' %}" class="btn btn-secondary btn-lg">Volver</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
