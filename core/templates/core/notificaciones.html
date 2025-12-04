@@ -3,27 +3,65 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <h2 class="mb-4">🔔 Mis Notificaciones</h2>
-
-        <div class="list-group shadow">
-            {% for noti in notificaciones %}
-                <div class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1 text-danger">Aviso Importante</h5>
-                        <small class="text-muted">{{ noti.fecha|date:"d M Y H:i" }}</small>
-                    </div>
-                    <p class="mb-1">{{ noti.mensaje }}</p>
-                    
-                    <small>
-                        <a href="{% url 'lista_citas' %}" class="text-primary fw-bold">Ir a la Agenda para reagendar &rarr;</a>
-                    </small>
-                </div>
-            {% empty %}
-                <div class="list-group-item text-center py-5">
-                    <p class="mb-0 text-muted">No tienes notificaciones nuevas.</p>
-                </div>
-            {% endfor %}
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark">🔔 Centro de Notificaciones</h2>
+            {% if notificaciones %}
+                <span class="badge bg-danger rounded-pill px-3 py-2">{{ notificaciones.count }} Nuevas</span>
+            {% endif %}
         </div>
+
+        {% if notificaciones %}
+            <div class="vstack gap-3">
+                {% for noti in notificaciones %}
+                    <div class="card shadow-sm border-0 border-start border-5 border-danger animate-hover">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title text-danger fw-bold mb-0">
+                                    ⚠️ Aviso Importante
+                                </h5>
+                                <small class="text-muted fw-semibold">
+                                    {{ noti.fecha|date:"d M Y" }} | {{ noti.fecha|date:"H:i" }}
+                                </small>
+                            </div>
+                            
+                            <p class="card-text text-dark fs-5 mt-3 mb-4">
+                                {{ noti.mensaje }}
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                                <a href="{% url 'lista_citas' %}" class="btn btn-outline-primary btn-sm fw-bold">
+                                    📅 Ir a la Agenda
+                                </a>
+                                
+                                <form action="{% url 'eliminar_notificacion' noti.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-light text-danger btn-sm hover-delete" title="Borrar mensaje">
+                                        🗑️ Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="text-center py-5 bg-white rounded-3 shadow-sm border">
+                <div class="mb-3" style="font-size: 5rem;">✅</div>
+                <h3 class="fw-bold text-dark">¡Todo limpio!</h3>
+                <p class="text-muted lead">No tienes notificaciones pendientes por leer.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary mt-3 px-4">Volver al Inicio</a>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<style>
+    .hover-delete:hover {
+        background-color: #dc3545;
+        color: white !important;
+        border-color: #dc3545;
+    }
+</style>
 {% endblock %}

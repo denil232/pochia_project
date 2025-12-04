@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow border-primary mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Datos a Reagendar</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Cliente:</strong> {{ cita_antigua.cliente.first_name }} {{ cita_antigua.cliente.last_name }}</p>
+                <p><strong>Mascota:</strong> {{ cita_antigua.mascota.nombre }} ({{ cita_antigua.mascota.raza }})</p>
+                <p><strong>Motivo Original:</strong> {{ cita_antigua.motivo }}</p>
+                <hr>
+                <p class="text-danger"><small>Cita anterior: {{ cita_antigua.fecha }} (Cancelada)</small></p>
+            </div>
+        </div>
+        <a href="{% url 'lista_citas' %}" class="btn btn-secondary w-100">Cancelar Operación</a>
+    </div>
+
+    <div class="col-md-8">
+        <h3>Selecciona el Nuevo Horario 📅</h3>
+        <p class="text-muted">Elige un bloque disponible para mover la cita.</p>
+        
+        <div class="card shadow">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Veterinario</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bloque in bloques_disponibles %}
+                            <tr>
+                                <td>{{ bloque.fecha }}</td>
+                                <td>{{ bloque.hora }}</td>
+                                <td>Dr/a. {{ bloque.veterinario.last_name }}</td>
+                                <td>
+                                    <a href="{% url 'confirmar_reagendamiento' bloque.id cita_antigua.id %}" 
+                                       class="btn btn-sm btn-success fw-bold">
+                                       ✅ Asignar Aquí
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    No hay horarios disponibles futuros. <br>
+                                    <a href="{% url 'crear_horario' %}">Crea nuevos bloques primero</a>.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

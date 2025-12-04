@@ -142,3 +142,60 @@ def cancelar_masivo(request):
         form = CancelarMasivoForm()
 
     return render(request, 'core/cancelar_masivo.html', {'form': form})
+
+# --- NUEVA FUNCIÓN: ELIMINAR NOTIFICACIÓN ---
+@login_required
+def eliminar_notificacion(request, notificacion_id):
+    # Buscamos la notificación
+    notificacion = get_object_or_404(Notificacion, id=notificacion_id)
+    
+    # Seguridad: Solo el dueño de la notificación puede borrarla
+    if notificacion.usuario == request.user:
+        notificacion.delete()
+        
+    return redirect('mis_notificaciones')
+
+# --- REAGENDAMIENTO (HU006) ---
+
+@staff_member_required
+def reagendar_cita(request, cita_id):
+    # 1. Buscamos la cita antigua (la cancelada)
+    cita_antigua = get_object_or_404(Cita, id=cita_id)
+    
+    # 2. Buscamos todos los bloques DISPONIBLES futuros para ofrecer
+    hoy = timezone.now().date()
+    bloques_disponibles = Cita.objects.filter(
+        estado='DISPONIBLE', 
+        fecha__gte=hoy
+    ).order_by('fecha', 'hora')
+
+    return render(request, 'core/reagendar_seleccionar.html', {
+        'cita_antigua': cita_antigua,
+        'bloques_disponibles': bloques_disponibles
+    })
+
+@staff_member_required
+def confirmar_reagendamiento(request, nueva_cita_id, antigua_cita_id):
+    # Obtenemos ambas citas
+    nueva_cita = get_object_or_404(Cita, id=nueva_cita_id)
+    cita_antigua = get_object_or_404(Cita, id=antigua_cita_id)
+
+    # Validamos que el destino esté libre
+    if nueva_cita.estado != 'DISPONIBLE':
+        return redirect('lista_citas')
+
+    # COPIAMOS LOS DATOS
+    nueva_cita.cliente = cita_antigua.cliente
+    nueva_cita.mascota = cita_antigua.mascota
+    nueva_cita.motivo = cita_antigua.motivo + " (Reagendada)"
+    nueva_cita.estado = 'RESERVADA'
+    nueva_cita.save()
+
+    # Opcional: Crear notificación de éxito para el cliente
+    if nueva_cita.cliente:
+        Notificacion.objects.create(
+            usuario=nueva_cita.cliente,
+            mensaje=f"Su cita ha sido reagendada exitosamente para el {nueva_cita.fecha} a las {nueva_cita.hora} con Dr/a. {nueva_cita.veterinario.last_name}."
+        )
+
+    return redirect('lista_citas')

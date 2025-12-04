@@ -6,10 +6,12 @@
     
     {% if user.is_staff %}
         <div>
+            <!-- BOTÓN 1: GESTIÓN DE AUSENCIAS (Cancelación Masiva) -->
             <a href="{% url 'cancelar_masivo' %}" class="btn btn-danger me-2">
                 🚨 Reportar Ausencia/Vacaciones
             </a>
             
+            <!-- BOTÓN 2: NUEVO BLOQUE -->
             <a href="{% url 'crear_horario' %}" class="btn btn-primary">
                 + Nuevo Bloque
             </a>
@@ -38,6 +40,7 @@
                         <td>{{ cita.hora }}</td>
                         <td>Dr/a. {{ cita.veterinario.first_name }} {{ cita.veterinario.last_name }}</td>
                         
+                        <!-- Columna Estado -->
                         <td>
                             {% if cita.estado == 'DISPONIBLE' %}
                                 <span class="badge bg-success">Disponible</span>
@@ -50,6 +53,7 @@
                             {% endif %}
                         </td>
 
+                        <!-- Columna Paciente -->
                         <td>
                             {% if cita.mascota %}
                                 {{ cita.mascota.nombre }} ({{ cita.mascota.dueno.first_name }})
@@ -58,19 +62,29 @@
                             {% endif %}
                         </td>
 
+                        <!-- Columna Acciones -->
                         <td>
+                            <!-- Botón Reservar (Solo para citas Disponibles) -->
                             {% if cita.estado == 'DISPONIBLE' %}
                                 <a href="{% url 'reservar_cita' cita.id %}" class="btn btn-sm btn-outline-success">Reservar</a>
                             {% endif %}
                             
+                            <!-- Botón Cancelar (Solo Staff y si NO está cancelada/realizada) -->
                             {% if user.is_staff and cita.estado != 'CANCELADA' and cita.estado != 'REALIZADA' %}
                                 <a href="{% url 'cancelar_cita' cita.id %}" class="btn btn-sm btn-outline-danger ms-1">Cancelar</a>
+                            {% endif %}
+
+                            <!-- NUEVO BOTÓN: REAGENDAR (Solo Staff, si está Cancelada y tenía cliente) -->
+                            {% if user.is_staff and cita.estado == 'CANCELADA' and cita.cliente %}
+                                <a href="{% url 'reagendar_cita' cita.id %}" class="btn btn-sm btn-primary ms-1">
+                                    🔄 Reagendar
+                                </a>
                             {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">No hay horarios futuros disponibles.</td>
+                        <td colspan="6" class="text-center py-4">No hay horarios futuros disponibles.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
