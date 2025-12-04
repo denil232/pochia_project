@@ -1,16 +1,86 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="text-center">
-    <h1>Bienvenido a Veterinaria Pochota S.A.</h1>
-    <p class="lead">Cuidamos a tus mascotas como si fueran nuestras.</p>
-    
-    {% if not user.is_authenticated %}
-        <a href="{% url 'registro' %}" class="btn btn-lg btn-success">¡Regístrate para pedir hora!</a>
-    {% else %}
-        <div class="alert alert-info">
-            <p>Ya estás conectado. Próximamente verás aquí tus citas.</p>
-        </div>
-    {% endif %}
+
+<div class="p-5 mb-4 bg-white rounded-3 shadow text-center border-top border-5 border-primary">
+    <div class="container-fluid py-5">
+        <h1 class="display-4 fw-bold text-dark">Bienvenido a <span class="text-primary">Pochita S.A.</span> 🐶</h1>
+        <p class="col-md-8 fs-5 mx-auto text-muted mt-3">
+            La clínica veterinaria donde tus mascotas son nuestra prioridad. 
+            Contamos con especialistas, urgencias 24/7 y el mejor trato para tus compañeros de vida.
+        </p>
+        
+        {% if not user.is_authenticated %}
+            <div class="mt-4 gap-2 d-sm-flex justify-content-sm-center">
+                <a href="{% url 'registro' %}" class="btn btn-primary btn-lg px-4 gap-3">¡Regístrate Gratis!</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-dark btn-lg px-4">Ingresar</a>
+            </div>
+        {% else %}
+            <div class="mt-4">
+                <a href="{% url 'lista_citas' %}" class="btn btn-success btn-lg px-5 shadow">📅 Reservar una Hora</a>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+<div class="row text-center mt-5 g-4">
+    <div class="col-12">
+        <h2 class="mb-2 fw-bold text-dark">Nuestros Servicios 🩺</h2>
+        <p class="text-muted">Cuidado integral para perros, gatos y exóticos</p>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 hover-effect">
+            <div class="card-body p-4">
+                <div class="display-4 text-primary mb-3">💉</div>
+                <h5 class="card-title fw-bold">Vacunación y Control</h5>
+                <p class="card-text text-secondary">
+                    Mantén a tu mascota protegida con su calendario de vacunas al día y chequeos preventivos anuales.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 hover-effect">
+            <div class="card-body p-4">
+                <div class="display-4 text-danger mb-3">❤</div>
+                <h5 class="card-title fw-bold">Cirugía y Urgencias</h5>
+                <p class="card-text text-secondary">
+                    Pabellones equipados con la última tecnología para cirugías complejas y atención crítica.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 hover-effect">
+            <div class="card-body p-4">
+                <div class="display-4 text-warning mb-3">🦷</div>
+                <h5 class="card-title fw-bold">Estética y Dental</h5>
+                <p class="card-text text-secondary">
+                    Servicio de peluquería clínica, baños sanitarios y limpieza dental (destartraje).
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row align-items-center mt-5 py-5 border-top">
+    <div class="col-lg-6">
+        <h3 class="fw-bold text-dark">¿Por qué elegir a Pochita S.A.?</h3>
+        <p class="text-muted">Nos diferenciamos por el amor y la dedicación en cada consulta.</p>
+        
+        <ul class="list-group list-group-flush mt-3 lead fs-6">
+            <li class="list-group-item bg-transparent border-0 ps-0">✅ <span class="fw-bold">Profesionales:</span> Veterinarios certificados de la U. de Chile.</li>
+            <li class="list-group-item bg-transparent border-0 ps-0">✅ <span class="fw-bold">Tecnología:</span> Laboratorio propio y Rayos X digitales.</li>
+            <li class="list-group-item bg-transparent border-0 ps-0">✅ <span class="fw-bold">Seguimiento:</span> Te recordamos tus próximas vacunas.</li>
+            <li class="list-group-item bg-transparent border-0 ps-0">✅ <span class="fw-bold">Online:</span> Sistema de reservas 24/7 sin llamadas.</li>
+        </ul>
+    </div>
+    <div class="col-lg-6 text-center d-none d-lg-block">
+        <div style="font-size: 10rem;">🐕‍🦺</div>
+    </div>
+</div>
+
 {% endblock %}

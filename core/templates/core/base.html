@@ -1,16 +1,33 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pochota S.A.</title>
+    <title>Veterinaria Pochita S.A.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* Hacemos que el contenedor principal ocupe al menos toda la altura de la pantalla */
+        main {
+            flex-shrink: 0;
+        }
+        /* Estilo para los enlaces del footer */
+        .footer-link {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body>
+<body class="d-flex flex-column h-100 bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">🐶 Pochita S.A.</a>
+            <a class="navbar-brand fw-bold fst-italic" href="{% url 'home' %}">🧡 Pochita S.A.</a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -18,46 +35,78 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link active" href="{% url 'lista_citas' %}">📅 Agenda Médica</a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="{% url 'mis_notificaciones' %}">
-                                🔔 Avisos
-                            </a>
+                            <a class="nav-link text-warning fw-bold" href="{% url 'mis_notificaciones' %}">🔔 Avisos</a>
                         </li>
-
                         <li class="nav-item">
                             <span class="nav-link text-white ms-2 border-start ps-3">Hola, {{ user.first_name }}</span>
                         </li>
-                        
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger btn-sm mt-1 ms-2">Salir</button>
                             </form>
                         </li>
-
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{% url 'login' %}">Ingresar</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{% url 'registro' %}">Registrarse</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Ingresar</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro' %}">Registrarse</a></li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <main class="container mt-4 mb-5">
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
+
+    <footer class="footer mt-auto py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase text-warning mb-3">Veterinaria Pochita S.A.</h5>
+                    <p class="small text-secondary">
+                        "El corazón de tu mascota en las mejores manos".<br>
+                        Somos especialistas en cuidado animal con más de 20 años de experiencia.
+                    </p>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-3">Accesos Directos</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="{% url 'home' %}" class="footer-link">Inicio</a></li>
+                        {% if not user.is_authenticated %}
+                            <li><a href="{% url 'registro' %}" class="footer-link">Crear Cuenta</a></li>
+                            <li><a href="{% url 'login' %}" class="footer-link">Iniciar Sesión</a></li>
+                        {% else %}
+                            <li><a href="{% url 'lista_citas' %}" class="footer-link">Ver mis Citas</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-12 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-3">Contacto</h5>
+                    <ul class="list-unstyled text-secondary small">
+                        <li class="mb-2">📍 Calle Falsa 123, Santiago</li>
+                        <li class="mb-2">📞 +56 9 5555 5555</li>
+                        <li class="mb-2">✉️ contacto@pochita.cl</li>
+                        <li>🕒 Lun - Vie: 09:00 - 20:00</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-4 border-secondary">
+            
+            <div class="text-center text-secondary small">
+                © 2025 Pochita S.A. - Desarrollado con Django y ❤
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
